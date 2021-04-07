@@ -1,106 +1,102 @@
-tokens = [
-    # Literals (identifier, integer constant, float constant, string constant, char const)
-    'ID', 'TYPEID', 'INTEGER', 'FLOAT', 'STRING', 'CHARACTER',
+from enum import Enum
 
-    # Operators (+,-,*,/,%,|,&,~,^,<<,>>, ||, &&, !, <, <=, >, >=, ==, !=)
-    'PLUS', 'MINUS', 'TIMES', 'DIVIDE', 'MODULO',
-    'OR', 'AND', 'NOT', 'XOR', 'LSHIFT', 'RSHIFT',
-    'LOR', 'LAND', 'LNOT',
-    'LT', 'LE', 'GT', 'GE', 'EQ', 'NE',
 
-    # Assignment (=, *=, /=, %=, +=, -=, <<=, >>=, &=, ^=, |=)
-    'EQUALS', 'TIMESEQUAL', 'DIVEQUAL', 'MODEQUAL', 'PLUSEQUAL', 'MINUSEQUAL',
-    'LSHIFTEQUAL', 'RSHIFTEQUAL', 'ANDEQUAL', 'XOREQUAL', 'OREQUAL',
+class TokenType(Enum):
+    # Variable Type
+    INT = 'int'
+    CHAR = 'char'
+    BOOLEAN = 'boolean'
+    STRING = 'String'
 
-    # Increment/decrement (++,--)
-    'INCREMENT', 'DECREMENT',
+    # Boolean String
+    TRUE = 'true'
+    FALSE = 'false'
 
-    # Structure dereference (->)
-    'ARROW',
+    # Special statements
+    IF = 'if'
+    ELSE = "else"
+    WHILE = 'while'
+    CLASS = 'class'
+    RETURN = 'return'
 
-    # Ternary operator (?)
-    'TERNARY',
+    # arithmetic operators
+    PLUS = '+'
+    MINUS = '-'
+    STAR = '*'
+    SLASH = '/'
 
-    # Delimeters ( ) [ ] { } , . ; :
-    'LPAREN', 'RPAREN',
-    'LBRACKET', 'RBRACKET',
-    'LBRACE', 'RBRACE',
-    'COMMA', 'PERIOD', 'SEMI', 'COLON',
+    # Assignment operator
+    ASSIGN = '='
 
-    # Ellipsis (...)
-    'ELLIPSIS',
-]
+    # Comparison operators
+    LT = '<'
+    GT = '>'
+    EQ = '=='
+    NE = '!='
+    LE = '<='
+    GE = '>='
 
-# Operators
-t_PLUS = r'\+'
-t_MINUS = r'-'
-t_TIMES = r'\*'
-t_DIVIDE = r'/'
-t_MODULO = r'%'
-t_OR = r'\|'
-t_AND = r'&'
-t_NOT = r'~'
-t_XOR = r'\^'
-t_LSHIFT = r'<<'
-t_RSHIFT = r'>>'
-t_LOR = r'\|\|'
-t_LAND = r'&&'
-t_LNOT = r'!'
-t_LT = r'<'
-t_GT = r'>'
-t_LE = r'<='
-t_GE = r'>='
-t_EQ = r'=='
-t_NE = r'!='
+    # Symbols
+    SEMI = ';'
+    LBLACE = '{'
+    RBLACE = '}'
+    LPAREN = '('
+    RPAREN = ')'
+    LBLACKET = '['
+    RBLANKET = ']'
+    COMMA = ','
 
-# Assignment operators
+    # spaces
+    WS = ' '
+    IG_WS = {'\n', '\t', ' '}
 
-t_EQUALS = r'='
-t_TIMESEQUAL = r'\*='
-t_DIVEQUAL = r'/='
-t_MODEQUAL = r'%='
-t_PLUSEQUAL = r'\+='
-t_MINUSEQUAL = r'-='
-t_LSHIFTEQUAL = r'<<='
-t_RSHIFTEQUAL = r'>>='
-t_ANDEQUAL = r'&='
-t_OREQUAL = r'\|='
-t_XOREQUAL = r'\^='
 
-# Increment/decrement
-t_INCREMENT = r'\+\+'
-t_DECREMENT = r'--'
+class Token:
+    def __init__(self, type, value):
+        self.type = type
+        self.value = value
 
-# ->
-t_ARROW = r'->'
+    def __str__(self):
+        return '{:<10} || {}'.format(self.type, self.value)
 
-# ?
-t_TERNARY = r'\?'
 
-# Delimeters
-t_LPAREN = r'\('
-t_RPAREN = r'\)'
-t_LBRACKET = r'\['
-t_RBRACKET = r'\]'
-t_LBRACE = r'\{'
-t_RBRACE = r'\}'
-t_COMMA = r','
-t_PERIOD = r'\.'
-t_SEMI = r';'
-t_COLON = r':'
-t_ELLIPSIS = r'\.\.\.'
+def is_digit(s):
+    return '0' <= s <= '9' if s else False
 
-# Identifiers
-t_ID = r'[A-Za-z_][A-Za-z0-9_]*'
 
-# Integer literal
-t_INTEGER = r'\d+([uU]|[lL]|[uU][lL]|[lL][uU])?'
+def is_letter(s):
+    if ('A' <= s <= 'Z') | ('a' <= s <= 'z'):
+        return True
+    else:
+        return False
 
-# Floating literal
-t_FLOAT = r'((\d+)(\.\d+)(e(\+|-)?(\d+))? | (\d+)e(\+|-)?(\d+))([lL]|[fF])?'
 
-# String literal
-t_STRING = r'\"([^\\\n]|(\\.))*?\"'
+class Lexer:
+    def __init__(self, sample):
+        self.sample = sample
+        self.token_list = []
+        self.start = 0
+        self.current = 0
+        self.comp = ''
 
-# Character constant 'c' or L'c'
-t_CHARACTER = r'(L)?\'([^\\\n]|(\\.))*?\''
+    def find_token(self):
+        self.comp = self.sample[self.current]
+
+        if is_digit(self.comp):
+            while is_digit(self.comp):
+                self.next_comp()
+            self.add_token(TokenType.INT)
+
+    def next_comp(self):
+        self.current += 1
+        self.comp = self.sample[self.current]
+
+    def add_token(self, t_type):
+        Token_Value = Token(t_type.name, self.sample[self.start: self.current])
+        self.token_list.append(Token_Value)
+
+
+Compiler = Lexer('1231243124124aefaefe')
+Compiler.find_token()
+for i in range(len(Compiler.token_list)):
+    print(Compiler.token_list[i])
