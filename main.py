@@ -14,9 +14,10 @@ class TokenType(Enum):
     TRUE = 'true'
     FALSE = 'false'
 
-    # Special statements
+    # Identifier
     ID = 'identifier'
 
+    # Special statements
     IF = 'if'
     ELSE = "else"
     WHILE = 'while'
@@ -48,13 +49,9 @@ class TokenType(Enum):
     RBLACE = '}'
     LPAREN = '('
     RPAREN = ')'
-    LBLACKET = '['
-    RBLANKET = ']'
+    LBRACKET = '['
+    RBRACKET = ']'
     COMMA = ','
-
-    # Spaces
-    WS = ' '
-    IG_WS = {'\n', '\t', ' '}
 
 
 # 토큰 인자 -> 이름, 값(string) 저장
@@ -167,10 +164,10 @@ class Lexer:
         # 대괄호
         elif self.comp == '[':
             self.next_comp()
-            self.add_token(TokenType.LBLACKET)
+            self.add_token(TokenType.LBRACKET)
         elif self.comp == ']':
             self.next_comp()
-            self.add_token(TokenType.RBLANKET)
+            self.add_token(TokenType.RBRACKET)
 
         # 세미콜론
         elif self.comp == ';':
@@ -193,7 +190,8 @@ class Lexer:
             self.add_token(TokenType.OP)
         elif self.comp == '-':
             if (self.sample[self.current - 1] == '+') | (self.sample[self.current - 1] == '-') | \
-                    (self.sample[self.current - 1] == '*') | (self.sample[self.current - 1] == '/'):
+                    (self.sample[self.current - 1] == '*') | (self.sample[self.current - 1] == '/') | \
+                    (self.start == 0):
                 self.next_comp()
                 while is_digit(self.comp):
                     self.next_comp()
