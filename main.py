@@ -127,9 +127,9 @@ class Lexer:
             elif self.sample[self.start:self.current] == 'return':
                 self.add_token(TokenType.RETURN)
             # True / False
-            elif self.sample[self.start:self.current] == 'True':
+            elif self.sample[self.start:self.current] == 'true':
                 self.add_token(TokenType.BOOLEAN)
-            elif self.sample[self.start:self.current] == 'False':
+            elif self.sample[self.start:self.current] == 'false':
                 self.add_token(TokenType.BOOLEAN)
             # int, char, Boolean, String -> vtype
             elif self.sample[self.start:self.current] == 'int':
@@ -274,3 +274,4 @@ print("input message = {}".format(Compiler.sample))
 # Tokenization 결과 csv 저장
 for i in range(len(Compiler.token_list)):
     result_file.write(Compiler.token_list[i].type + ',' + Compiler.token_list[i].value + '\n')
+
