@@ -1,5 +1,4 @@
 from enum import Enum
-import pickle
 
 
 class TokenType(Enum):
@@ -104,6 +103,8 @@ class Lexer:
         if is_digit(self.comp):
             while is_digit(self.comp):
                 self.next_comp()
+
+            # 0으로 시작하는 숫자들 예외처리(0 단일 제외)
             try:
                 if (self.sample[self.start] == '0') & ((self.current - self.start) >1):
                     raise Exception('Invalid Token')
@@ -271,7 +272,6 @@ for i in input_text:
 Compiler = Lexer(lex_sample)
 Compiler.token_finder()
 print("input message = {}".format(Compiler.sample))
-
 
 for i in range(len(Compiler.token_list)):
     result_file.write(Compiler.token_list[i].type + ',' + Compiler.token_list[i].value + '\n')

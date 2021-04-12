@@ -1,3 +1,10 @@
-# python_compiler
-Happy python
-25조 김석주, 김민수
+# Python_Interpreter
+###Happy python  
+>CAUCSE  
+>Hyosu Language
+
+
+##👨‍❤️‍👨💖🧡💛25조💛🧡💖👨‍❤️‍👨
+* __김석주__ https://github.com/seokzooland
+* __김민수__ https://github.com/kimlohen
+
