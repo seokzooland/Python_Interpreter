@@ -1,4 +1,5 @@
 from enum import Enum
+import pickle
 
 
 class TokenType(Enum):
@@ -62,9 +63,10 @@ class Token:
     def __init__(self, type, value):
         self.type = type
         self.value = value
-
+    '''
     def __str__(self):
         return '{:<10} || {}'.format(self.type, self.value)
+    '''
 
 
 # 숫자확인 -> bool
@@ -74,7 +76,7 @@ def is_digit(s):
 
 # 문자확인 -> bool
 def is_letter(s):
-    if ('A' <= s <= 'Z') | ('a' <= s <= 'z'):
+    if ('A' <= s <= 'Z') | ('a' <= s <= 'z') | (s == '_'):
         return True
     else:
         return False
@@ -102,7 +104,12 @@ class Lexer:
         if is_digit(self.comp):
             while is_digit(self.comp):
                 self.next_comp()
-            self.add_token(TokenType.INTEGER)
+            try:
+                if (self.sample[self.start] == '0') & ((self.current - self.start) >1):
+                    raise Exception('Invalid Token')
+                self.add_token(TokenType.INTEGER)
+            except (ValueError, Exception):
+                print('{}는 유효한 토큰이 아닙니다.'.format(self.sample[self.start:self.current]))
 
         # 문자로 시작
         elif is_letter(self.comp):
@@ -253,8 +260,10 @@ class Lexer:
         self.token_list.append(Token_Value)
 
 
-file = open("sample.txt", 'r')
-input_text = file.readlines()
+open_file = open("sample.txt", 'r')
+result_file = open("result.csv", 'w')
+
+input_text = open_file.readlines()
 lex_sample = ''
 for i in input_text:
     lex_sample += i
@@ -262,5 +271,8 @@ for i in input_text:
 Compiler = Lexer(lex_sample)
 Compiler.token_finder()
 print("input message = {}".format(Compiler.sample))
+
+
 for i in range(len(Compiler.token_list)):
-    print(Compiler.token_list[i])
+    result_file.write(Compiler.token_list[i].type + ',' + Compiler.token_list[i].value + '\n')
+
