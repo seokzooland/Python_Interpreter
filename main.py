@@ -2,7 +2,7 @@ from enum import Enum
 
 
 class TokenType(Enum):
-    # Variable Type
+    # vtype
     VTYPE = 'vtype'
 
     INTEGER = 'int'
@@ -23,7 +23,7 @@ class TokenType(Enum):
     CLASS = 'class'
     RETURN = 'return'
 
-    # arithmetic operators
+    # Arithmetic operators
     OP = 'operator'
 
     PLUS = '+'
@@ -52,28 +52,24 @@ class TokenType(Enum):
     RBLANKET = ']'
     COMMA = ','
 
-    # spaces
+    # Spaces
     WS = ' '
     IG_WS = {'\n', '\t', ' '}
 
 
-# 토큰 인자 -> 이름, 값
+# 토큰 인자 -> 이름, 값(string) 저장
 class Token:
-    def __init__(self, type, value):
-        self.type = type
-        self.value = value
-    '''
-    def __str__(self):
-        return '{:<10} || {}'.format(self.type, self.value)
-    '''
+    def __init__(self, t_type, t_value):
+        self.type = t_type
+        self.value = t_value
 
 
-# 숫자확인 -> bool
+# 숫자확인 -> return bool
 def is_digit(s):
     return '0' <= s <= '9' if s else False
 
 
-# 문자확인 -> bool
+# 문자확인 -> return bool
 def is_letter(s):
     if ('A' <= s <= 'Z') | ('a' <= s <= 'z') | (s == '_'):
         return True
@@ -83,19 +79,21 @@ def is_letter(s):
 
 class Lexer:
     def __init__(self, sample):
-        self.sample = sample + '\0'
-        self.token_list = []
-        self.start = 0
-        self.current = 0
-        self.sample_len = len(self.sample)
-        self.comp = ''
+        self.sample = sample + '\0'         # input text 에 NULL 삽입
+        self.token_list = []                # Tokenized Token List
+        self.start = 0                      # 분석 시작 index
+        self.current = 0                    # 분석중 index
+        self.sample_len = len(self.sample)  # input text 길이
+        self.comp = ''                      # input text 의 분석중인 component
 
+    # NULL 만날 때까지 Token 찾음
     def token_finder(self):
         while self.sample[self.current] != '\0':
             self.start = self.current
             self.find_token()
             self.start = self.current
 
+    # 토큰 찾기
     def find_token(self):
         self.comp = self.sample[self.current]
 
@@ -136,7 +134,7 @@ class Lexer:
                 self.add_token(TokenType.BOOLEAN)
             elif self.sample[self.start:self.current] == 'False':
                 self.add_token(TokenType.BOOLEAN)
-            # int, char, Boolean, String
+            # int, char, Boolean, String -> vtype
             elif self.sample[self.start:self.current] == 'int':
                 self.add_token(TokenType.VTYPE)
             elif self.sample[self.start:self.current] == 'char':
@@ -145,7 +143,7 @@ class Lexer:
                 self.add_token(TokenType.VTYPE)
             elif self.sample[self.start:self.current] == 'String':
                 self.add_token(TokenType.VTYPE)
-            # 그외
+            # 그외 -> ID
             else:
                 self.add_token(TokenType.ID)
 
@@ -184,12 +182,12 @@ class Lexer:
             self.next_comp()
             self.add_token(TokenType.COMMA)
 
-        # =
+        # '='
         elif self.comp == '=':
             self.next_comp()
             self.add_token(TokenType.ASSIGN)
 
-        # + / - / * / /
+        # '+' / '-' / '*' / '/'
         elif self.comp == '+':
             self.next_comp()
             self.add_token(TokenType.OP)
@@ -210,7 +208,7 @@ class Lexer:
             self.next_comp()
             self.add_token(TokenType.OP)
 
-        # 비교연산자
+        # 비교연산자 '<' / '>' / '==' / '!=' / '<=' / '>='
         elif self.comp == '<':
             self.next_comp()
             self.add_token(TokenType.LT)
@@ -230,11 +228,11 @@ class Lexer:
             self.next_comp()
             self.add_token(TokenType.GE)
 
-        # space 무시
+        # 공백문자 무시
         elif (self.comp == ' ') | (self.comp == '\n') | (self.comp == '\t'):
             self.next_comp()
 
-        # char
+        # '' char
         elif self.comp == '\'':
             self.next_comp()
             while self.comp != '\'':
@@ -242,7 +240,7 @@ class Lexer:
             self.next_comp()
             self.add_token(TokenType.CHAR)
 
-        # string
+        # "" string
         elif self.comp == '\"':
             self.next_comp()
             while self.comp != '\"':
@@ -250,12 +248,12 @@ class Lexer:
             self.next_comp()
             self.add_token(TokenType.STRING)
 
-    # 다음 체크
+    # next component
     def next_comp(self):
         self.current += 1
         self.comp = self.sample[self.current]
 
-    # 토큰 리스트 추가
+    # 리스트에 토큰 추가
     def add_token(self, t_type):
         Token_Value = Token(t_type.name, self.sample[self.start: self.current])
         self.token_list.append(Token_Value)
@@ -266,6 +264,8 @@ result_file = open("result.csv", 'w')
 
 input_text = open_file.readlines()
 lex_sample = ''
+
+# 분석할 text 전부 불러옴
 for i in input_text:
     lex_sample += i
 
@@ -273,6 +273,6 @@ Compiler = Lexer(lex_sample)
 Compiler.token_finder()
 print("input message = {}".format(Compiler.sample))
 
+# Tokenization 결과 csv 저장
 for i in range(len(Compiler.token_list)):
     result_file.write(Compiler.token_list[i].type + ',' + Compiler.token_list[i].value + '\n')
-
