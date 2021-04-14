@@ -1,1 +1,1 @@
-int main { int __222 = abc}
+123if0

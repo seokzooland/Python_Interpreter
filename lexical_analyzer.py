@@ -1,4 +1,8 @@
+#!/usr/bin/python3
+
+
 from enum import Enum
+import sys
 
 
 class TokenType(Enum):
@@ -76,12 +80,12 @@ def is_letter(s):
 
 class Lexer:
     def __init__(self, sample):
-        self.sample = sample + '\0'         # input text 에 NULL 삽입
-        self.token_list = []                # Tokenized Token List
-        self.start = 0                      # 분석 시작 index
-        self.current = 0                    # 분석중 index
+        self.sample = sample + '\0'  # input text 에 NULL 삽입
+        self.token_list = []  # Tokenized Token List
+        self.start = 0  # 분석 시작 index
+        self.current = 0  # 분석중 index
         self.sample_len = len(self.sample)  # input text 길이
-        self.comp = ''                      # input text 의 분석중인 component
+        self.comp = ''  # input text 의 분석중인 component
 
     # NULL 만날 때까지 Token 찾음
     def token_finder(self):
@@ -101,7 +105,7 @@ class Lexer:
 
             # 0으로 시작하는 숫자들 예외처리(0 단일 제외)
             try:
-                if (self.sample[self.start] == '0') & ((self.current - self.start) >1):
+                if (self.sample[self.start] == '0') & ((self.current - self.start) > 1):
                     raise Exception('Invalid Token')
                 self.add_token(TokenType.INTEGER)
             except (ValueError, Exception):
@@ -189,16 +193,30 @@ class Lexer:
             self.next_comp()
             self.add_token(TokenType.OP)
         elif self.comp == '-':
+            # '-' 앞에 다른 operator -> '-'는 integer
             if (self.sample[self.current - 1] == '+') | (self.sample[self.current - 1] == '-') | \
-                    (self.sample[self.current - 1] == '*') | (self.sample[self.current - 1] == '/') | \
-                    (self.start == 0):
+                    (self.sample[self.current - 1] == '*') | (self.sample[self.current - 1] == '/'):
                 self.next_comp()
                 while is_digit(self.comp):
                     self.next_comp()
                 self.add_token(TokenType.INTEGER)
             else:
-                self.next_comp()
-                self.add_token(TokenType.OP)
+                # '-' 뒤에 0임 -> 이후 00123 나오면 illegal, 0만 나오면 OK
+                if self.sample[self.current + 1] == '0':
+                    self.next_comp()
+                    self.add_token(TokenType.OP)
+                    while is_digit(self.comp):
+                        self.next_comp()
+                    try:
+                        if (self.sample[self.start + 1] == '0') & (self.current - self.start - 1 > 1):
+                            raise Exception('Invalid Token')
+                        self.add_token(TokenType.INTEGER)
+                    except (ValueError, Exception):
+                        print('{}는 유효한 토큰이 아닙니다.'.format(self.sample[self.start + 1:self.current]))
+                else:
+                    self.next_comp()
+                    self.add_token(TokenType.OP)
+
         elif self.comp == '*':
             self.next_comp()
             self.add_token(TokenType.OP)
@@ -235,8 +253,9 @@ class Lexer:
             self.next_comp()
             while self.comp != '\'':
                 self.next_comp()
-            self.next_comp()
+            self.start += 1
             self.add_token(TokenType.CHAR)
+            self.next_comp()
 
         # "" string
         elif self.comp == '\"':
@@ -257,8 +276,9 @@ class Lexer:
         self.token_list.append(Token_Value)
 
 
-open_file = open("sample.txt", 'r')
-result_file = open("result.csv", 'w')
+file_name = sys.argv[1]
+open_file = open(file_name, 'r')
+result_file = open("{}_output.txt".format(file_name), 'w')
 
 input_text = open_file.readlines()
 lex_sample = ''
@@ -271,7 +291,6 @@ Compiler = Lexer(lex_sample)
 Compiler.token_finder()
 print("input message = {}".format(Compiler.sample))
 
-# Tokenization 결과 csv 저장
+# Tokenization 결과 txt 저장
 for i in range(len(Compiler.token_list)):
-    result_file.write(Compiler.token_list[i].type + ',' + Compiler.token_list[i].value + '\n')
-
+    result_file.write('<' + Compiler.token_list[i].type + ',' + Compiler.token_list[i].value + '>' + '\n')
