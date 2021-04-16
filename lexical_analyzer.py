@@ -103,13 +103,35 @@ class Lexer:
             while is_digit(self.comp):
                 self.next_comp()
 
-            # 0으로 시작하는 숫자들 예외처리(0 단일 제외)
+            # 숫자갯수가 1자리 이상이면
+            if (self.current - self.start) > 1:
+                # 0으로 시작?
+                if self.sample[self.start] == '0':
+                    temp = self.current
+                    self.current = self.start
+                    # 0은 다 INTEGER 토큰화
+                    while self.sample[self.current] == '0':
+                        self.next_comp()
+                        self.add_token(TokenType.INTEGER)
+                        self.start = self.current
+                    self.start = self.current
+                    self.current = temp
+                    self.add_token(TokenType.INTEGER)
+                # 0 외의 나머지숫자로 시작?
+                else:
+                    self.add_token(TokenType.INTEGER)
+            # 숫자갯수 1개
+            else:
+                self.add_token(TokenType.INTEGER)
+
+            '''
             try:
                 if (self.sample[self.start] == '0') & ((self.current - self.start) > 1):
                     raise Exception('Invalid Token')
                 self.add_token(TokenType.INTEGER)
             except (ValueError, Exception):
                 print('{}는 유효한 토큰이 아닙니다.'.format(self.sample[self.start:self.current]))
+            '''
 
         # 문자로 시작
         elif is_letter(self.comp):
