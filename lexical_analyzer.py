@@ -124,15 +124,6 @@ class Lexer:
             else:
                 self.add_token(TokenType.INTEGER)
 
-            '''
-            try:
-                if (self.sample[self.start] == '0') & ((self.current - self.start) > 1):
-                    raise Exception('Invalid Token')
-                self.add_token(TokenType.INTEGER)
-            except (ValueError, Exception):
-                print('{}는 유효한 토큰이 아닙니다.'.format(self.sample[self.start:self.current]))
-            '''
-
         # 문자로 시작
         elif is_letter(self.comp):
             while is_letter(self.comp) | is_digit(self.comp):
