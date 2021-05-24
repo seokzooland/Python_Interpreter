@@ -4,12 +4,6 @@ import token
 import sys
 
 
-# 토큰 인자 -> 이름, 값(string) 저장
-class Token:
-    def __init__(self, t_type, t_value):
-        self.type = t_type
-        self.value = t_value
-
 
 # 숫자확인 -> return bool
 def is_digit(s):
@@ -231,7 +225,7 @@ class Lexer:
 
     # 리스트에 토큰 추가
     def add_token(self, t_type):
-        Token_Value = Token(t_type.name, self.sample[self.start: self.current])
+        Token_Value = token.Token(t_type.name, self.sample[self.start: self.current])
         self.token_list.append(Token_Value)
 
 

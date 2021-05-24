@@ -1,5 +1,4 @@
 
-
 from enum import Enum
 
 
@@ -54,3 +53,11 @@ class TokenType(Enum):
     LBRACKET = '['
     RBRACKET = ']'
     COMMA = ','
+
+
+# 토큰 인자 -> 이름, 값(string) 저장
+class Token:
+    def __init__(self, t_type, t_value):
+        self.type = t_type
+        self.value = t_value
+
