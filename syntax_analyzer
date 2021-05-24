@@ -1,5 +1,11 @@
 #!/usr/bin/python3
 
 import token
+import slr
 import sys
+
+X = 20
+
+print(slr.Actionlist)
+
 
