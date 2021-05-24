@@ -1,61 +1,7 @@
 #!/usr/bin/python3
 
-
-from enum import Enum
+import token
 import sys
-
-
-class TokenType(Enum):
-    # vtype
-    VTYPE = 'vtype'
-
-    INTEGER = 'int'
-    CHAR = 'char'
-    BOOLEAN = 'boolean'
-    STRING = 'String'
-
-    # Boolean String
-    TRUE = 'true'
-    FALSE = 'false'
-
-    # Identifier
-    ID = 'identifier'
-
-    # Special statements
-    IF = 'if'
-    ELSE = "else"
-    WHILE = 'while'
-    CLASS = 'class'
-    RETURN = 'return'
-
-    # Arithmetic operators
-    OP = 'operator'
-
-    PLUS = '+'
-    MINUS = '-'
-    STAR = '*'
-    SLASH = '/'
-
-    # Assignment operator
-    ASSIGN = '='
-
-    # Comparison operators
-    LT = '<'
-    GT = '>'
-    EQ = '=='
-    NE = '!='
-    LE = '<='
-    GE = '>='
-
-    # Symbols
-    SEMI = ';'
-    LBLACE = '{'
-    RBLACE = '}'
-    LPAREN = '('
-    RPAREN = ')'
-    LBRACKET = '['
-    RBRACKET = ']'
-    COMMA = ','
 
 
 # 토큰 인자 -> 이름, 값(string) 저장
@@ -112,17 +58,17 @@ class Lexer:
                     # 0은 다 INTEGER 토큰화
                     while self.sample[self.current] == '0':
                         self.next_comp()
-                        self.add_token(TokenType.INTEGER)
+                        self.add_token(token.TokenType.INTEGER)
                         self.start = self.current
                     self.start = self.current
                     self.current = temp
-                    self.add_token(TokenType.INTEGER)
+                    self.add_token(token.TokenType.INTEGER)
                 # 0 외의 나머지숫자로 시작?
                 else:
-                    self.add_token(TokenType.INTEGER)
+                    self.add_token(token.TokenType.INTEGER)
             # 숫자갯수 1개
             else:
-                self.add_token(TokenType.INTEGER)
+                self.add_token(token.TokenType.INTEGER)
 
         # 문자로 시작
         elif is_letter(self.comp):
@@ -130,81 +76,81 @@ class Lexer:
                 self.next_comp()
             # if
             if self.sample[self.start:self.current] == 'if':
-                self.add_token(TokenType.IF)
+                self.add_token(token.TokenType.IF)
             # else
             elif self.sample[self.start:self.current] == 'else':
-                self.add_token(TokenType.ELSE)
+                self.add_token(token.TokenType.ELSE)
             # while
             elif self.sample[self.start:self.current] == 'while':
-                self.add_token(TokenType.WHILE)
+                self.add_token(token.TokenType.WHILE)
             # class
             elif self.sample[self.start:self.current] == 'class':
-                self.add_token(TokenType.CLASS)
+                self.add_token(token.TokenType.CLASS)
             # return
             elif self.sample[self.start:self.current] == 'return':
-                self.add_token(TokenType.RETURN)
+                self.add_token(token.TokenType.RETURN)
             # True / False
             elif self.sample[self.start:self.current] == 'true':
-                self.add_token(TokenType.BOOLEAN)
+                self.add_token(token.TokenType.BOOLEAN)
             elif self.sample[self.start:self.current] == 'false':
-                self.add_token(TokenType.BOOLEAN)
+                self.add_token(token.TokenType.BOOLEAN)
             # int, char, Boolean, String -> vtype
             elif self.sample[self.start:self.current] == 'int':
-                self.add_token(TokenType.VTYPE)
+                self.add_token(token.TokenType.VTYPE)
             elif self.sample[self.start:self.current] == 'char':
-                self.add_token(TokenType.VTYPE)
+                self.add_token(token.TokenType.VTYPE)
             elif self.sample[self.start:self.current] == 'Boolean':
-                self.add_token(TokenType.VTYPE)
+                self.add_token(token.TokenType.VTYPE)
             elif self.sample[self.start:self.current] == 'String':
-                self.add_token(TokenType.VTYPE)
+                self.add_token(token.TokenType.VTYPE)
             # 그외 -> ID
             else:
-                self.add_token(TokenType.ID)
+                self.add_token(token.TokenType.ID)
 
         # 소괄호
         elif self.comp == '(':
             self.next_comp()
-            self.add_token(TokenType.LPAREN)
+            self.add_token(token.TokenType.LPAREN)
 
         elif self.comp == ')':
             self.next_comp()
-            self.add_token(TokenType.RPAREN)
+            self.add_token(token.TokenType.RPAREN)
 
         # 중괄호
         elif self.comp == '{':
             self.next_comp()
-            self.add_token(TokenType.LBLACE)
+            self.add_token(token.TokenType.LBLACE)
         elif self.comp == '}':
             self.next_comp()
-            self.add_token(TokenType.RBLACE)
+            self.add_token(token.TokenType.RBLACE)
 
         # 대괄호
         elif self.comp == '[':
             self.next_comp()
-            self.add_token(TokenType.LBRACKET)
+            self.add_token(token.TokenType.LBRACKET)
         elif self.comp == ']':
             self.next_comp()
-            self.add_token(TokenType.RBRACKET)
+            self.add_token(token.TokenType.RBRACKET)
 
         # 세미콜론
         elif self.comp == ';':
             self.next_comp()
-            self.add_token(TokenType.SEMI)
+            self.add_token(token.TokenType.SEMI)
 
         # 콤마
         elif self.comp == ',':
             self.next_comp()
-            self.add_token(TokenType.COMMA)
+            self.add_token(token.TokenType.COMMA)
 
         # '='
         elif self.comp == '=':
             self.next_comp()
-            self.add_token(TokenType.ASSIGN)
+            self.add_token(token.TokenType.ASSIGN)
 
         # '+' / '-' / '*' / '/'
         elif self.comp == '+':
             self.next_comp()
-            self.add_token(TokenType.OP)
+            self.add_token(token.TokenType.OP)
         elif self.comp == '-':
             # '-' 앞에 다른 operator -> '-'는 integer
             if (self.sample[self.current - 1] == '+') | (self.sample[self.current - 1] == '-') | \
@@ -212,50 +158,50 @@ class Lexer:
                 self.next_comp()
                 while is_digit(self.comp):
                     self.next_comp()
-                self.add_token(TokenType.INTEGER)
+                self.add_token(token.TokenType.INTEGER)
             else:
                 # '-' 뒤에 0임 -> 이후 00123 나오면 illegal, 0만 나오면 OK
                 if self.sample[self.current + 1] == '0':
                     self.next_comp()
-                    self.add_token(TokenType.OP)
+                    self.add_token(token.TokenType.OP)
                     while is_digit(self.comp):
                         self.next_comp()
                     try:
                         if (self.sample[self.start + 1] == '0') & (self.current - self.start - 1 > 1):
                             raise Exception('Invalid Token')
-                        self.add_token(TokenType.INTEGER)
+                        self.add_token(token.TokenType.INTEGER)
                     except (ValueError, Exception):
                         print('{}는 유효한 토큰이 아닙니다.'.format(self.sample[self.start + 1:self.current]))
                 else:
                     self.next_comp()
-                    self.add_token(TokenType.OP)
+                    self.add_token(token.TokenType.OP)
 
         elif self.comp == '*':
             self.next_comp()
-            self.add_token(TokenType.OP)
+            self.add_token(token.TokenType.OP)
         elif self.comp == '/':
             self.next_comp()
-            self.add_token(TokenType.OP)
+            self.add_token(token.TokenType.OP)
 
         # 비교연산자 '<' / '>' / '==' / '!=' / '<=' / '>='
         elif self.comp == '<':
             self.next_comp()
-            self.add_token(TokenType.LT)
+            self.add_token(token.TokenType.LT)
         elif self.comp == '>':
             self.next_comp()
-            self.add_token(TokenType.GT)
+            self.add_token(token.TokenType.GT)
         elif self.comp == '==':
             self.next_comp()
-            self.add_token(TokenType.EQ)
+            self.add_token(token.TokenType.EQ)
         elif self.comp == '!=':
             self.next_comp()
-            self.add_token(TokenType.NE)
+            self.add_token(token.TokenType.NE)
         elif self.comp == '<=':
             self.next_comp()
-            self.add_token(TokenType.LE)
+            self.add_token(token.TokenType.LE)
         elif self.comp == '>=':
             self.next_comp()
-            self.add_token(TokenType.GE)
+            self.add_token(token.TokenType.GE)
 
         # 공백문자 무시
         elif (self.comp == ' ') | (self.comp == '\n') | (self.comp == '\t'):
@@ -267,7 +213,7 @@ class Lexer:
             while self.comp != '\'':
                 self.next_comp()
             self.start += 1
-            self.add_token(TokenType.CHAR)
+            self.add_token(token.TokenType.CHAR)
             self.next_comp()
 
         # "" string
@@ -276,7 +222,7 @@ class Lexer:
             while self.comp != '\"':
                 self.next_comp()
             self.next_comp()
-            self.add_token(TokenType.STRING)
+            self.add_token(token.TokenType.STRING)
 
     # next component
     def next_comp(self):
