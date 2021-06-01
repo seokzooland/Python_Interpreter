@@ -1,1 +1,7 @@
-0010--10
+VTYPE int
+ID main
+LPAREN (
+RPAREN )
+LBLACE {
+VTYPE char
+ID if123

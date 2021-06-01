@@ -246,4 +246,4 @@ print("input message = {}".format(Compiler.sample))
 
 # Tokenization 결과 txt 저장
 for i in range(len(Compiler.token_list)):
-    result_file.write('<' + Compiler.token_list[i].type + ',' + Compiler.token_list[i].value + '>' + '\n')
+    result_file.write(Compiler.token_list[i].type + ' ' + Compiler.token_list[i].value + '\n')
