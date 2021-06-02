@@ -1,7 +1,6 @@
 VTYPE int
-ID main
-LPAREN (
-RPAREN )
-LBLACE {
-VTYPE char
-ID if123
+ID 1
+ASSIGN =
+NUM 1
+ADDSUB +
+NUM 2
