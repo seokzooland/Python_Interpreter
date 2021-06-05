@@ -1,0 +1,2 @@
+reject
+(33,lblace) 은 table에 없습니다.
